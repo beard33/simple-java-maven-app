@@ -1,21 +1,20 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.8.1-adoptopenjdk-11'
-            args '-v /root/.m2:/root/.m2'
-        }
+    agent any
+    tools { 
+        maven 'maven' 
+        jdk 'jdk8' 
     }
-    options {
-        skipStagesAfterUnstable()
-    }
+
     stages {
         stage('Build') {
             steps {
+                echo 'Building...'
                 sh 'mvn -B -DskipTests clean package'
             }
         }
         stage('Test') {
             steps {
+                echo 'Testing...'
                 sh 'mvn test'
             }
             post {
@@ -24,10 +23,11 @@ pipeline {
                 }
             }
         }
-        stage('Deliver') { 
+        stage('Deploy') {
             steps {
-                sh './jenkins/scripts/deliver.sh' 
+                echo 'Deploying....'
             }
         }
+       
     }
 }
